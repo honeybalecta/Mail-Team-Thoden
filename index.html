@@ -10,281 +10,164 @@
 <style>
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    background: #fafaf7;
-    color: #1a1a1a;
-    min-height: 100vh;
+    background: #fafaf7; color: #1a1a1a; min-height: 100vh;
   }
-  .app {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 20px 16px 40px;
-  }
+  .app { max-width: 720px; margin: 0 auto; padding: 20px 16px 40px; }
   header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-  }
-  h1 {
-    font-size: 22px;
-    margin: 0;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-  }
-  .info-btn {
-    background: none;
-    border: 1px solid #d4d4d0;
-    color: #555;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .date-line {
-    color: #666;
-    font-size: 14px;
+    display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 20px;
   }
+  h1 { font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+  .info-btn {
+    background: none; border: 1px solid #d4d4d0; color: #555;
+    width: 32px; height: 32px; border-radius: 50%;
+    font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .date-line { color: #666; font-size: 14px; margin-bottom: 18px; }
+
+  .step { margin-bottom: 22px; }
+  .step-label {
+    font-size: 13px; font-weight: 700; color: #888;
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
   .drop-zone {
-    border: 2px dashed #c9c9c0;
-    border-radius: 12px;
-    padding: 32px 20px;
-    text-align: center;
-    background: #fff;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-bottom: 16px;
+    border: 2px dashed #c9c9c0; border-radius: 12px;
+    padding: 28px 20px; text-align: center; background: #fff;
+    cursor: pointer; transition: all 0.15s;
   }
-  .drop-zone.dragging {
-    border-color: #f5b800;
-    background: #fff9e6;
-  }
+  .drop-zone.dragging { border-color: #f5b800; background: #fff9e6; }
   .drop-zone.has-file {
-    border-style: solid;
-    border-color: #4a8a3f;
-    background: #f4faf2;
-    text-align: left;
-    padding: 16px 20px;
+    border-style: solid; border-color: #4a8a3f; background: #f4faf2;
+    text-align: left; padding: 14px 18px;
   }
-  .drop-zone p {
-    margin: 0;
-    color: #666;
-    font-size: 15px;
-    line-height: 1.5;
-  }
+  .drop-zone p { margin: 0; color: #666; font-size: 15px; line-height: 1.5; }
   .drop-zone .filename {
-    font-weight: 600;
-    color: #1a1a1a;
-    font-size: 15px;
-    word-break: break-all;
+    font-weight: 600; color: #1a1a1a; font-size: 15px;
+    word-break: break-all; display: block;
   }
   .drop-zone .filemeta {
-    color: #4a8a3f;
-    font-size: 13px;
-    margin-top: 4px;
+    color: #4a8a3f; font-size: 13px; margin-top: 4px; display: block;
   }
   input[type="file"] { display: none; }
-  .preview-toggle {
-    background: none;
-    border: 1px solid #d4d4d0;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 13px;
-    color: #555;
-    cursor: pointer;
-    margin-bottom: 12px;
-    width: 100%;
+
+  .editor-tabs {
+    display: flex; gap: 4px;
+    border-bottom: 1px solid #e5e5e0;
+  }
+  .editor-tab {
+    background: none; border: none; padding: 10px 16px;
+    font-size: 14px; font-weight: 600; color: #888;
+    cursor: pointer; border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .editor-tab.active { color: #1a1a1a; border-bottom-color: #f5b800; }
+  .editor-pane {
+    background: #fff; border: 1px solid #e5e5e0; border-top: none;
+    border-radius: 0 0 12px 12px; overflow: hidden;
+  }
+  .editor textarea {
+    width: 100%; min-height: 320px; border: none; padding: 16px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 14px; line-height: 1.6; resize: vertical;
+    outline: none; background: #fff; color: #1a1a1a;
   }
   .preview {
-    background: #fff;
-    border: 1px solid #e5e5e0;
-    border-radius: 12px;
-    padding: 20px;
-    max-height: 300px;
-    overflow-y: auto;
-    margin-bottom: 20px;
-    display: none;
-    font-size: 14px;
-    line-height: 1.6;
+    padding: 16px 20px; max-height: 480px; overflow-y: auto;
+    font-size: 14px; line-height: 1.6; display: none;
   }
-  .preview.open { display: block; }
+  .preview.active { display: block; }
+  .editor.hidden { display: none; }
   .preview h1, .preview h2, .preview h3 {
-    margin-top: 1.2em;
-    margin-bottom: 0.4em;
+    margin-top: 1.2em; margin-bottom: 0.4em; line-height: 1.25;
   }
   .preview h1:first-child, .preview h2:first-child { margin-top: 0; }
   .preview p { margin: 0.6em 0; }
   .preview a { color: #2563a8; word-break: break-word; }
   .preview ul, .preview ol { padding-left: 24px; }
   .preview code {
-    background: #f0efe9;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.9em;
+    background: #f0efe9; padding: 2px 6px; border-radius: 4px; font-size: 0.9em;
   }
   .preview blockquote {
-    border-left: 3px solid #f5b800;
-    margin: 0.8em 0;
-    padding: 0 0 0 14px;
-    color: #555;
+    border-left: 3px solid #f5b800; margin: 0.8em 0;
+    padding: 0 0 0 14px; color: #555;
   }
-  .actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .editor-hint { font-size: 12px; color: #888; margin-top: 6px; padding: 0 4px; }
+  .editor-hint.saved { color: #4a8a3f; }
+
+  .actions { display: flex; flex-direction: column; gap: 10px; }
   .btn {
-    padding: 16px 20px;
-    border-radius: 12px;
-    border: none;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
+    padding: 16px 20px; border-radius: 12px; border: none;
+    font-size: 16px; font-weight: 600; cursor: pointer;
     transition: opacity 0.15s, transform 0.05s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    text-decoration: none;
   }
   .btn:active { transform: scale(0.98); }
-  .btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  .btn-primary {
-    background: #f5b800;
-    color: #1a1a1a;
-  }
-  .btn-secondary {
-    background: #fff;
-    color: #1a1a1a;
-    border: 1px solid #d4d4d0;
-  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: #f5b800; color: #1a1a1a; }
+  .btn-secondary { background: #1a1a1a; color: #fff; }
+
   .status {
-    margin-top: 14px;
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-size: 14px;
-    display: none;
+    margin-top: 14px; padding: 12px 16px; border-radius: 10px;
+    font-size: 14px; display: none;
   }
   .status.show { display: block; }
-  .status.info { background: #eef5fb; color: #1d4f80; }
+  .status.info    { background: #eef5fb; color: #1d4f80; }
   .status.success { background: #f0f7ed; color: #2e6628; }
-  .status.error { background: #fbeaea; color: #8b2727; }
+  .status.error   { background: #fbeaea; color: #8b2727; }
 
-  /* Modal */
   .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 100;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: none; align-items: center; justify-content: center;
+    padding: 20px; z-index: 100;
   }
   .modal-overlay.open { display: flex; }
   .modal {
-    background: #fff;
-    border-radius: 12px;
-    max-width: 480px;
-    width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
-    padding: 24px;
+    background: #fff; border-radius: 12px;
+    max-width: 480px; width: 100%; max-height: 80vh;
+    overflow-y: auto; padding: 24px;
   }
-  .modal h2 {
-    margin: 0 0 12px;
-    font-size: 18px;
-  }
-  .modal p {
-    margin: 8px 0;
-    font-size: 14px;
-    line-height: 1.6;
-    color: #444;
-  }
+  .modal h2 { margin: 0 0 12px; font-size: 18px; }
+  .modal p { margin: 8px 0; font-size: 14px; line-height: 1.6; color: #444; }
   .modal .close {
-    background: #1a1a1a;
-    color: #fff;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    margin-top: 16px;
-    cursor: pointer;
-    font-size: 14px;
+    background: #1a1a1a; color: #fff; border: none;
+    padding: 10px 18px; border-radius: 8px;
+    margin-top: 16px; cursor: pointer; font-size: 14px;
   }
 
-  /* PDF-Renderbereich (off-screen) */
   #pdf-render {
-    position: absolute;
-    left: -9999px;
-    top: 0;
-    width: 170mm;
-    background: #fff;
-    color: #000;
+    position: absolute; left: -9999px; top: 0;
+    width: 170mm; background: #fff; color: #000;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: 11pt;
-    line-height: 1.55;
-    padding: 0;
+    font-size: 11pt; line-height: 1.55; padding: 0;
   }
   #pdf-render h1 {
-    font-size: 20pt;
-    margin: 0 0 4pt;
-    line-height: 1.2;
-    border-bottom: 2pt solid #1a1a1a;
-    padding-bottom: 6pt;
+    font-size: 20pt; margin: 0 0 4pt; line-height: 1.2;
+    border-bottom: 2pt solid #1a1a1a; padding-bottom: 6pt;
   }
-  #pdf-render h2 {
-    font-size: 14pt;
-    margin: 16pt 0 4pt;
-    line-height: 1.25;
-  }
-  #pdf-render h3 {
-    font-size: 12pt;
-    margin: 12pt 0 3pt;
-    line-height: 1.3;
-  }
+  #pdf-render h2 { font-size: 14pt; margin: 16pt 0 4pt; line-height: 1.25; }
+  #pdf-render h3 { font-size: 12pt; margin: 12pt 0 3pt; line-height: 1.3; }
   #pdf-render p { margin: 6pt 0; }
   #pdf-render a {
-    color: #1a3d6b;
-    text-decoration: underline;
-    word-wrap: break-word;
+    color: #1a3d6b; text-decoration: underline; word-wrap: break-word;
   }
-  #pdf-render ul, #pdf-render ol {
-    padding-left: 18pt;
-    margin: 6pt 0;
-  }
+  #pdf-render ul, #pdf-render ol { padding-left: 18pt; margin: 6pt 0; }
   #pdf-render li { margin: 2pt 0; }
   #pdf-render blockquote {
-    border-left: 2pt solid #888;
-    margin: 8pt 0;
-    padding: 0 0 0 10pt;
-    color: #444;
-    font-style: italic;
+    border-left: 2pt solid #888; margin: 8pt 0;
+    padding: 0 0 0 10pt; color: #444; font-style: italic;
   }
   #pdf-render code {
-    font-family: "Courier New", monospace;
-    font-size: 10pt;
-    background: #f0f0f0;
-    padding: 1pt 3pt;
+    font-family: "Courier New", monospace; font-size: 10pt;
+    background: #f0f0f0; padding: 1pt 3pt;
   }
-  #pdf-render hr {
-    border: none;
-    border-top: 1pt solid #ccc;
-    margin: 12pt 0;
-  }
-  #pdf-render .pdf-meta {
-    color: #666;
-    font-size: 9pt;
-    margin-bottom: 12pt;
-  }
+  #pdf-render hr { border: none; border-top: 1pt solid #ccc; margin: 12pt 0; }
+  #pdf-render .pdf-meta { color: #666; font-size: 9pt; margin-bottom: 12pt; }
 </style>
 </head>
 <body>
@@ -297,30 +180,45 @@
 
   <div class="date-line" id="dateLine"></div>
 
-  <label class="drop-zone" id="dropZone" for="fileInput">
-    <p id="dropText">📄 Markdown-Datei hier ablegen<br>oder tippen zum Auswählen</p>
-    <input type="file" id="fileInput" accept=".md,.markdown,text/markdown,text/plain">
-  </label>
-
-  <button class="preview-toggle" id="previewToggle" style="display:none">Vorschau einblenden ▾</button>
-  <div class="preview" id="preview"></div>
-
-  <div class="actions">
-    <button class="btn btn-primary" id="shareBtn" disabled>
-      📤 PDF erstellen & teilen
-    </button>
-    <button class="btn btn-secondary" id="downloadBtn" disabled>
-      💾 Nur PDF herunterladen
-    </button>
+  <div class="step">
+    <div class="step-label">1 · Markdown laden</div>
+    <label class="drop-zone" id="dropZone" for="fileInput">
+      <p id="dropText">📄 Markdown-Datei hier ablegen<br>oder tippen zum Auswählen</p>
+      <input type="file" id="fileInput" accept=".md,.markdown,text/markdown,text/plain">
+    </label>
   </div>
 
-  <div class="status" id="status"></div>
+  <div class="step" id="editorStep" style="display:none">
+    <div class="step-label">2 · Bearbeiten & prüfen</div>
+    <div class="editor-tabs">
+      <button class="editor-tab active" id="tabEdit">✏️ Bearbeiten</button>
+      <button class="editor-tab" id="tabPreview">👁 Vorschau</button>
+    </div>
+    <div class="editor-pane">
+      <div class="editor" id="editorWrap">
+        <textarea id="editor" placeholder="Markdown wird hier angezeigt …"></textarea>
+      </div>
+      <div class="preview" id="preview"></div>
+    </div>
+    <div class="editor-hint" id="editorHint">Änderungen wirken sich auf die generierte PDF aus.</div>
+  </div>
+
+  <div class="step" id="actionStep" style="display:none">
+    <div class="step-label">3 · PDF & E-Mail</div>
+    <div class="actions">
+      <button class="btn btn-primary" id="downloadBtn">
+        💾 PDF herunterladen
+      </button>
+      <button class="btn btn-secondary" id="mailBtn">
+        ✉️ E-Mail-Entwurf öffnen
+      </button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
 </div>
 
-<!-- Off-screen PDF render target -->
 <div id="pdf-render"></div>
 
-<!-- Impressum Modal -->
 <div class="modal-overlay" id="impressumModal">
   <div class="modal">
     <h2>Impressum</h2>
@@ -340,26 +238,26 @@
 (function() {
   'use strict';
 
-  // ===== STATE =====
-  let markdownText = '';
-  let fileName = '';
-
-  // ===== ELEMENTS =====
-  const dropZone = document.getElementById('dropZone');
-  const dropText = document.getElementById('dropText');
-  const fileInput = document.getElementById('fileInput');
-  const preview = document.getElementById('preview');
-  const previewToggle = document.getElementById('previewToggle');
-  const shareBtn = document.getElementById('shareBtn');
-  const downloadBtn = document.getElementById('downloadBtn');
-  const statusEl = document.getElementById('status');
-  const dateLine = document.getElementById('dateLine');
-  const pdfRender = document.getElementById('pdf-render');
+  const dropZone     = document.getElementById('dropZone');
+  const dropText     = document.getElementById('dropText');
+  const fileInput    = document.getElementById('fileInput');
+  const editorStep   = document.getElementById('editorStep');
+  const actionStep   = document.getElementById('actionStep');
+  const editor       = document.getElementById('editor');
+  const editorWrap   = document.getElementById('editorWrap');
+  const preview      = document.getElementById('preview');
+  const tabEdit      = document.getElementById('tabEdit');
+  const tabPreview   = document.getElementById('tabPreview');
+  const editorHint   = document.getElementById('editorHint');
+  const downloadBtn  = document.getElementById('downloadBtn');
+  const mailBtn      = document.getElementById('mailBtn');
+  const statusEl     = document.getElementById('status');
+  const dateLine     = document.getElementById('dateLine');
+  const pdfRender    = document.getElementById('pdf-render');
   const impressumBtn = document.getElementById('impressumBtn');
   const impressumModal = document.getElementById('impressumModal');
-  const closeModal = document.getElementById('closeModal');
+  const closeModal   = document.getElementById('closeModal');
 
-  // ===== DATE =====
   const MONATE = ['Januar','Februar','März','April','Mai','Juni',
                   'Juli','August','September','Oktober','November','Dezember'];
   function formatDateDE(d) {
@@ -371,34 +269,29 @@
     const yy = String(d.getFullYear()).slice(-2);
     return `${dd}${mm}${yy}`;
   }
-  const today = new Date();
-  const dateDE = formatDateDE(today);
+  const today    = new Date();
+  const dateDE   = formatDateDE(today);
   const dateFile = formatDateFile(today);
   dateLine.textContent = `Heute: ${dateDE}`;
 
-  // ===== STATUS HELPER =====
   function showStatus(msg, type='info') {
     statusEl.textContent = msg;
     statusEl.className = `status show ${type}`;
   }
-  function hideStatus() {
-    statusEl.className = 'status';
-  }
+  function hideStatus() { statusEl.className = 'status'; }
 
-  // ===== FILE HANDLING =====
   function handleFile(file) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
-      markdownText = e.target.result;
-      fileName = file.name;
+      editor.value = e.target.result;
       dropZone.classList.add('has-file');
       dropText.innerHTML = `<span class="filename">📄 ${file.name}</span>` +
                            `<span class="filemeta">${(file.size/1024).toFixed(1)} KB · zum Wechseln antippen</span>`;
+      editorStep.style.display = 'block';
+      actionStep.style.display = 'block';
       renderPreview();
-      previewToggle.style.display = 'block';
-      shareBtn.disabled = false;
-      downloadBtn.disabled = false;
+      showEditor();
       hideStatus();
     };
     reader.onerror = () => showStatus('Datei konnte nicht gelesen werden.', 'error');
@@ -407,18 +300,15 @@
 
   fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
 
-  // Drag & Drop
   ['dragenter','dragover'].forEach(ev => {
     dropZone.addEventListener(ev, (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+      e.preventDefault(); e.stopPropagation();
       dropZone.classList.add('dragging');
     });
   });
   ['dragleave','drop'].forEach(ev => {
     dropZone.addEventListener(ev, (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+      e.preventDefault(); e.stopPropagation();
       dropZone.classList.remove('dragging');
     });
   });
@@ -427,43 +317,59 @@
     if (file) handleFile(file);
   });
 
-  // ===== MARKDOWN RENDER =====
   function renderPreview() {
-    const html = marked.parse(markdownText, { breaks: false, gfm: true });
-    preview.innerHTML = html;
+    preview.innerHTML = marked.parse(editor.value, { breaks: false, gfm: true });
   }
 
-  previewToggle.addEventListener('click', () => {
-    preview.classList.toggle('open');
-    previewToggle.textContent = preview.classList.contains('open')
-      ? 'Vorschau ausblenden ▴'
-      : 'Vorschau einblenden ▾';
+  function showEditor() {
+    tabEdit.classList.add('active');
+    tabPreview.classList.remove('active');
+    editorWrap.classList.remove('hidden');
+    preview.classList.remove('active');
+  }
+  function showPreview() {
+    renderPreview();
+    tabPreview.classList.add('active');
+    tabEdit.classList.remove('active');
+    editorWrap.classList.add('hidden');
+    preview.classList.add('active');
+  }
+
+  tabEdit.addEventListener('click', showEditor);
+  tabPreview.addEventListener('click', showPreview);
+
+  let editTimer = null;
+  editor.addEventListener('input', () => {
+    editorHint.textContent = 'Bearbeitung läuft …';
+    editorHint.classList.remove('saved');
+    clearTimeout(editTimer);
+    editTimer = setTimeout(() => {
+      editorHint.textContent = '✓ Änderungen übernommen — wirken sich auf die nächste PDF aus.';
+      editorHint.classList.add('saved');
+    }, 400);
   });
 
-  // ===== PDF GENERATION =====
-  async function buildPdfBlob() {
-    const html = marked.parse(markdownText, { breaks: false, gfm: true });
-    pdfRender.innerHTML = `<div class="pdf-meta">${dateDE}</div>${html}`;
+  function pdfFilename() {
+    return `${dateFile}-Pressespiegel.pdf`;
+  }
+
+  async function generatePdf() {
+    pdfRender.innerHTML = `<div class="pdf-meta">${dateDE}</div>` +
+      marked.parse(editor.value, { breaks: false, gfm: true });
 
     const opts = {
-      margin: [15, 15, 18, 15], // top, left, bottom, right (mm)
-      filename: `${dateFile}-Pressespiegel.pdf`,
+      margin: [15, 15, 18, 15],
+      filename: pdfFilename(),
       image: { type: 'jpeg', quality: 0.95 },
       html2canvas: { scale: 2, useCORS: true, letterRendering: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
 
-    const blob = await html2pdf().set(opts).from(pdfRender).output('blob');
+    await html2pdf().set(opts).from(pdfRender).save();
     pdfRender.innerHTML = '';
-    return blob;
   }
 
-  function pdfFilename() {
-    return `${dateFile}-Pressespiegel.pdf`;
-  }
-
-  // ===== EMAIL TEXT =====
   const RECIPIENTS = [
     'ulrich.thoden@bundestag.de',
     'ulrich.thoden.ma02@bundestag.de',
@@ -477,101 +383,40 @@
     return `Pressespiegel ${dateDE}`;
   }
   function emailBody() {
-    return `Guten Morgen ihr lieben,
-
-anbei schicke ich euch den heutigen Pressespiegel.
-Ich wünsche euch einen tollen Tag!
-
-Liebe Grüße
-Raphael`;
+    return `Guten Morgen ihr lieben,\n\nanbei schicke ich euch den heutigen Pressespiegel.\nIch wünsche euch einen tollen Tag!\n\nLiebe Grüße\nRaphael`;
+  }
+  function buildMailto() {
+    const to = RECIPIENTS.join(',');
+    return `mailto:${to}` +
+           `?subject=${encodeURIComponent(emailSubject())}` +
+           `&body=${encodeURIComponent(emailBody())}`;
   }
 
-  // ===== SHARE BUTTON =====
-  shareBtn.addEventListener('click', async () => {
-    if (!markdownText) return;
-    shareBtn.disabled = true;
-    downloadBtn.disabled = true;
-    showStatus('PDF wird erstellt…', 'info');
-
-    try {
-      const blob = await buildPdfBlob();
-      const file = new File([blob], pdfFilename(), { type: 'application/pdf' });
-
-      // Save a copy to Downloads first (so user has it even if share is canceled)
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = pdfFilename();
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-
-      // Build mail-friendly share text including all metadata
-      const recipientLine = RECIPIENTS.join('; ');
-      const shareText = `An: ${recipientLine}
-
-${emailBody()}`;
-
-      const shareData = {
-        title: emailSubject(),
-        text: shareText,
-        files: [file]
-      };
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        showStatus('Share-Sheet öffnet sich… web.de auswählen.', 'info');
-        await navigator.share(shareData);
-        showStatus('✓ Geteilt. PDF liegt zusätzlich im Download-Ordner.', 'success');
-      } else {
-        // Fallback: open mailto and let user attach the downloaded PDF
-        const mailto = `mailto:${RECIPIENTS.join(',')}` +
-                       `?subject=${encodeURIComponent(emailSubject())}` +
-                       `&body=${encodeURIComponent(emailBody())}`;
-        window.location.href = mailto;
-        showStatus('Web Share nicht unterstützt — Mail-Entwurf geöffnet. PDF liegt im Download-Ordner und muss manuell angehängt werden.', 'info');
-      }
-    } catch (err) {
-      console.error(err);
-      if (err.name === 'AbortError') {
-        showStatus('Teilen abgebrochen. PDF liegt im Download-Ordner.', 'info');
-      } else {
-        showStatus('Fehler: ' + err.message, 'error');
-      }
-    } finally {
-      shareBtn.disabled = false;
-      downloadBtn.disabled = false;
-    }
-  });
-
-  // ===== DOWNLOAD BUTTON =====
   downloadBtn.addEventListener('click', async () => {
-    if (!markdownText) return;
-    shareBtn.disabled = true;
+    if (!editor.value.trim()) {
+      showStatus('Kein Inhalt vorhanden.', 'error');
+      return;
+    }
     downloadBtn.disabled = true;
-    showStatus('PDF wird erstellt…', 'info');
-
+    mailBtn.disabled = true;
+    showStatus('PDF wird erstellt …', 'info');
     try {
-      const blob = await buildPdfBlob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = pdfFilename();
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      showStatus('✓ PDF gespeichert: ' + pdfFilename(), 'success');
+      await generatePdf();
+      showStatus(`✓ PDF gespeichert: ${pdfFilename()}`, 'success');
     } catch (err) {
       console.error(err);
-      showStatus('Fehler: ' + err.message, 'error');
+      showStatus('Fehler bei PDF-Erstellung: ' + err.message, 'error');
     } finally {
-      shareBtn.disabled = false;
       downloadBtn.disabled = false;
+      mailBtn.disabled = false;
     }
   });
 
-  // ===== IMPRESSUM =====
+  mailBtn.addEventListener('click', () => {
+    showStatus('E-Mail-Entwurf wird geöffnet … PDF aus dem Download-Ordner anhängen.', 'info');
+    window.location.href = buildMailto();
+  });
+
   impressumBtn.addEventListener('click', () => impressumModal.classList.add('open'));
   closeModal.addEventListener('click', () => impressumModal.classList.remove('open'));
   impressumModal.addEventListener('click', (e) => {
