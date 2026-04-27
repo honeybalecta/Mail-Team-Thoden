@@ -3,620 +3,582 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#1a1a1a">
-<title>Pressespiegel-Versand</title>
-
-<!-- Bibliotheken -->
+<meta name="theme-color" content="#f5b800">
+<title>Pressespiegel-Versender</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
-  :root {
-    --bg: #f5f1ea;
-    --bg-paper: #fffdf8;
-    --ink: #1a1a1a;
-    --ink-soft: #4a4a4a;
-    --accent: #c8442a;
-    --accent-soft: #e8a892;
-    --line: #d8cfc0;
-    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-    font-size: 17px;
-    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: #fafaf7;
+    color: #1a1a1a;
     min-height: 100vh;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
-
-  .wrap {
-    max-width: 640px;
+  .app {
+    max-width: 720px;
     margin: 0 auto;
-    padding: 24px 20px 80px;
+    padding: 20px 16px 40px;
   }
-
   header {
-    border-bottom: 2px solid var(--ink);
-    padding-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 24px;
   }
-
-  .kicker {
-    font-family: 'SF Mono', 'Menlo', monospace;
-    font-size: 11px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 4px;
-  }
-
   h1 {
-    font-size: 28px;
-    line-height: 1.1;
+    font-size: 22px;
+    margin: 0;
     font-weight: 700;
     letter-spacing: -0.01em;
   }
-
-  .date {
-    font-family: 'SF Mono', 'Menlo', monospace;
-    font-size: 13px;
-    color: var(--ink-soft);
-    margin-top: 8px;
+  .info-btn {
+    background: none;
+    border: 1px solid #d4d4d0;
+    color: #555;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
-
-  /* Drop-Zone */
-  .drop {
-    background: var(--bg-paper);
-    border: 2px dashed var(--line);
+  .date-line {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .drop-zone {
+    border: 2px dashed #c9c9c0;
     border-radius: 12px;
     padding: 32px 20px;
     text-align: center;
-    transition: all 0.2s;
-    box-shadow: var(--shadow);
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 16px;
   }
-  .drop.has-file {
+  .drop-zone.dragging {
+    border-color: #f5b800;
+    background: #fff9e6;
+  }
+  .drop-zone.has-file {
     border-style: solid;
-    border-color: var(--accent);
-    background: #fff;
-  }
-  .drop.dragover {
-    border-color: var(--accent);
-    background: #fff;
-    transform: scale(1.01);
-  }
-
-  .drop-icon {
-    font-size: 32px;
-    margin-bottom: 8px;
-  }
-
-  .drop-label {
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .drop-sub {
-    font-size: 14px;
-    color: var(--ink-soft);
-  }
-
-  input[type="file"] { display: none; }
-
-  .file-info {
-    display: none;
-    margin-top: 12px;
-    padding: 10px 14px;
-    background: rgba(200, 68, 42, 0.08);
-    border-radius: 8px;
-    font-size: 14px;
+    border-color: #4a8a3f;
+    background: #f4faf2;
     text-align: left;
+    padding: 16px 20px;
   }
-  .file-info.show { display: block; }
-  .file-info strong { display: block; margin-bottom: 2px; }
-  .file-info span { color: var(--ink-soft); font-size: 12px; }
-
-  /* Buttons */
+  .drop-zone p {
+    margin: 0;
+    color: #666;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .drop-zone .filename {
+    font-weight: 600;
+    color: #1a1a1a;
+    font-size: 15px;
+    word-break: break-all;
+  }
+  .drop-zone .filemeta {
+    color: #4a8a3f;
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  input[type="file"] { display: none; }
+  .preview-toggle {
+    background: none;
+    border: 1px solid #d4d4d0;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    margin-bottom: 12px;
+    width: 100%;
+  }
+  .preview {
+    background: #fff;
+    border: 1px solid #e5e5e0;
+    border-radius: 12px;
+    padding: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    display: none;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .preview.open { display: block; }
+  .preview h1, .preview h2, .preview h3 {
+    margin-top: 1.2em;
+    margin-bottom: 0.4em;
+  }
+  .preview h1:first-child, .preview h2:first-child { margin-top: 0; }
+  .preview p { margin: 0.6em 0; }
+  .preview a { color: #2563a8; word-break: break-word; }
+  .preview ul, .preview ol { padding-left: 24px; }
+  .preview code {
+    background: #f0efe9;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  .preview blockquote {
+    border-left: 3px solid #f5b800;
+    margin: 0.8em 0;
+    padding: 0 0 0 14px;
+    color: #555;
+  }
   .actions {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 20px;
   }
-
-  button {
-    font-family: inherit;
+  .btn {
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: none;
     font-size: 16px;
     font-weight: 600;
-    padding: 14px 20px;
-    border: none;
-    border-radius: 10px;
     cursor: pointer;
-    transition: all 0.15s;
-    width: 100%;
-    text-align: center;
+    transition: opacity 0.15s, transform 0.05s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
-
+  .btn:active { transform: scale(0.98); }
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
   .btn-primary {
-    background: var(--ink);
-    color: var(--bg-paper);
+    background: #f5b800;
+    color: #1a1a1a;
   }
-  .btn-primary:active:not(:disabled) {
-    transform: scale(0.98);
-    background: var(--accent);
-  }
-  .btn-primary:disabled {
-    background: var(--line);
-    color: var(--ink-soft);
-    cursor: not-allowed;
-  }
-
   .btn-secondary {
-    background: transparent;
-    color: var(--ink);
-    border: 1.5px solid var(--ink);
+    background: #fff;
+    color: #1a1a1a;
+    border: 1px solid #d4d4d0;
   }
-  .btn-secondary:active:not(:disabled) {
-    background: var(--ink);
-    color: var(--bg-paper);
-  }
-  .btn-secondary:disabled {
-    border-color: var(--line);
-    color: var(--ink-soft);
-    cursor: not-allowed;
-  }
-
-  /* Status */
   .status {
-    margin-top: 16px;
-    padding: 12px 14px;
-    border-radius: 8px;
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 10px;
     font-size: 14px;
     display: none;
   }
   .status.show { display: block; }
-  .status.info { background: rgba(200, 68, 42, 0.1); color: var(--accent); }
-  .status.success { background: #d4e8d0; color: #2c5d1f; }
-  .status.error { background: #f8d4cc; color: #8a2818; }
+  .status.info { background: #eef5fb; color: #1d4f80; }
+  .status.success { background: #f0f7ed; color: #2e6628; }
+  .status.error { background: #fbeaea; color: #8b2727; }
 
-  /* Vorschau */
-  .preview-toggle {
-    margin-top: 24px;
-    text-align: center;
-    font-size: 13px;
-    color: var(--ink-soft);
-    cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  .preview {
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
     display: none;
-    margin-top: 16px;
+    align-items: center;
+    justify-content: center;
     padding: 20px;
-    background: var(--bg-paper);
-    border-radius: 8px;
-    box-shadow: var(--shadow);
-    max-height: 400px;
+    z-index: 100;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 12px;
+    max-width: 480px;
+    width: 100%;
+    max-height: 80vh;
     overflow-y: auto;
+    padding: 24px;
+  }
+  .modal h2 {
+    margin: 0 0 12px;
+    font-size: 18px;
+  }
+  .modal p {
+    margin: 8px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+  }
+  .modal .close {
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    margin-top: 16px;
+    cursor: pointer;
     font-size: 14px;
   }
-  .preview.show { display: block; }
-  .preview h1, .preview h2, .preview h3 { margin: 12px 0 6px; line-height: 1.2; }
-  .preview h1 { font-size: 20px; }
-  .preview h2 { font-size: 17px; }
-  .preview h3 { font-size: 15px; }
-  .preview p { margin-bottom: 10px; }
-  .preview ul, .preview ol { margin: 8px 0 12px 20px; }
-  .preview li { margin-bottom: 4px; }
-  .preview a { color: var(--accent); }
-  .preview blockquote {
-    border-left: 3px solid var(--accent);
-    padding-left: 12px;
-    margin: 10px 0;
-    color: var(--ink-soft);
-    font-style: italic;
-  }
-  .preview code {
-    background: rgba(0,0,0,0.05);
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 13px;
-  }
 
-  /* PDF-Render-Container (versteckt) */
+  /* PDF-Renderbereich (off-screen) */
   #pdf-render {
     position: absolute;
     left: -9999px;
     top: 0;
-    width: 794px; /* A4 @ 96dpi */
-    background: white;
-    padding: 60px 70px;
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 12pt;
+    width: 170mm;
+    background: #fff;
+    color: #000;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 11pt;
     line-height: 1.55;
-    color: #1a1a1a;
+    padding: 0;
   }
-  #pdf-render h1 { font-size: 22pt; margin-bottom: 8pt; line-height: 1.15; }
-  #pdf-render h2 { font-size: 16pt; margin: 16pt 0 6pt; line-height: 1.2; }
-  #pdf-render h3 { font-size: 13pt; margin: 12pt 0 4pt; line-height: 1.25; }
-  #pdf-render p { margin-bottom: 8pt; }
-  #pdf-render ul, #pdf-render ol { margin: 6pt 0 10pt 20pt; }
-  #pdf-render li { margin-bottom: 3pt; }
-  #pdf-render a { color: #c8442a; text-decoration: underline; }
+  #pdf-render h1 {
+    font-size: 20pt;
+    margin: 0 0 4pt;
+    line-height: 1.2;
+    border-bottom: 2pt solid #1a1a1a;
+    padding-bottom: 6pt;
+  }
+  #pdf-render h2 {
+    font-size: 14pt;
+    margin: 16pt 0 4pt;
+    line-height: 1.25;
+  }
+  #pdf-render h3 {
+    font-size: 12pt;
+    margin: 12pt 0 3pt;
+    line-height: 1.3;
+  }
+  #pdf-render p { margin: 6pt 0; }
+  #pdf-render a {
+    color: #1a3d6b;
+    text-decoration: underline;
+    word-wrap: break-word;
+  }
+  #pdf-render ul, #pdf-render ol {
+    padding-left: 18pt;
+    margin: 6pt 0;
+  }
+  #pdf-render li { margin: 2pt 0; }
   #pdf-render blockquote {
-    border-left: 3px solid #c8442a;
-    padding-left: 14pt;
-    margin: 10pt 0;
-    color: #4a4a4a;
+    border-left: 2pt solid #888;
+    margin: 8pt 0;
+    padding: 0 0 0 10pt;
+    color: #444;
     font-style: italic;
   }
   #pdf-render code {
-    background: #f0eee8;
-    padding: 1pt 4pt;
-    border-radius: 2pt;
-    font-family: 'Courier New', monospace;
-    font-size: 11pt;
+    font-family: "Courier New", monospace;
+    font-size: 10pt;
+    background: #f0f0f0;
+    padding: 1pt 3pt;
   }
   #pdf-render hr {
-    border: 0;
-    border-top: 1px solid #d8cfc0;
-    margin: 14pt 0;
+    border: none;
+    border-top: 1pt solid #ccc;
+    margin: 12pt 0;
   }
-  #pdf-render strong { font-weight: 700; }
-
-  footer {
-    margin-top: 40px;
-    padding-top: 16px;
-    border-top: 1px solid var(--line);
-    font-size: 11px;
-    color: var(--ink-soft);
-    text-align: center;
-    line-height: 1.6;
+  #pdf-render .pdf-meta {
+    color: #666;
+    font-size: 9pt;
+    margin-bottom: 12pt;
   }
-  footer a { color: var(--ink-soft); }
 </style>
 </head>
 <body>
 
-<div class="wrap">
+<div class="app">
   <header>
-    <div class="kicker">Werkzeug · Honeybalecta</div>
-    <h1>Pressespiegel-Versand</h1>
-    <div class="date" id="today"></div>
+    <h1>📰 Pressespiegel-Versender</h1>
+    <button class="info-btn" id="impressumBtn" aria-label="Impressum">i</button>
   </header>
 
-  <label for="file-input" class="drop" id="drop">
-    <div class="drop-icon">📄</div>
-    <div class="drop-label">Markdown-Datei wählen</div>
-    <div class="drop-sub">Tippen oder hierher ziehen (.md)</div>
-    <div class="file-info" id="file-info">
-      <strong id="file-name"></strong>
-      <span id="file-size"></span>
-    </div>
+  <div class="date-line" id="dateLine"></div>
+
+  <label class="drop-zone" id="dropZone" for="fileInput">
+    <p id="dropText">📄 Markdown-Datei hier ablegen<br>oder tippen zum Auswählen</p>
+    <input type="file" id="fileInput" accept=".md,.markdown,text/markdown,text/plain">
   </label>
-  <input type="file" id="file-input" accept=".md,.markdown,text/markdown,text/plain">
+
+  <button class="preview-toggle" id="previewToggle" style="display:none">Vorschau einblenden ▾</button>
+  <div class="preview" id="preview"></div>
 
   <div class="actions">
-    <button class="btn-primary" id="btn-send" disabled>
-      PDF erstellen & Mail öffnen
+    <button class="btn btn-primary" id="shareBtn" disabled>
+      📤 PDF erstellen & teilen
     </button>
-    <button class="btn-secondary" id="btn-pdf-only" disabled>
-      Nur PDF herunterladen
+    <button class="btn btn-secondary" id="downloadBtn" disabled>
+      💾 Nur PDF herunterladen
     </button>
   </div>
 
   <div class="status" id="status"></div>
-
-  <div class="preview-toggle" id="preview-toggle" style="display:none;">Vorschau anzeigen</div>
-  <div class="preview" id="preview"></div>
-
-  <footer>
-    Generiert lokal auf deinem Gerät. Keine Daten verlassen den Browser.<br>
-    <a href="#" id="impressum-link">Impressum</a>
-  </footer>
 </div>
 
-<!-- Versteckter Render-Container für PDF -->
+<!-- Off-screen PDF render target -->
 <div id="pdf-render"></div>
 
-<!-- Impressum-Modal -->
-<div id="impressum-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; padding:20px;">
-  <div style="background:var(--bg-paper); padding:28px; border-radius:12px; max-width:420px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-    <h2 style="font-size:18px; margin-bottom:12px;">Impressum</h2>
-    <p style="font-size:14px; line-height:1.6; color:var(--ink-soft);">
-      Raphael<br>
-      c/o COCENTER<br>
-      Koppoldstr. 1<br>
-      86551 Aichach
+<!-- Impressum Modal -->
+<div class="modal-overlay" id="impressumModal">
+  <div class="modal">
+    <h2>Impressum</h2>
+    <p>Raphael Thelen<br>
+    c/o COCENTER<br>
+    Koppoldstr. 1<br>
+    86551 Aichach</p>
+    <p>Kontakt: <a href="https://ko-fi.com/honeybalecta">ko-fi.com/honeybalecta</a></p>
+    <p style="font-size:12px; color:#777; margin-top:16px;">
+      Dieses Tool läuft vollständig lokal in deinem Browser. Es werden keine Daten an Server übertragen.
     </p>
-    <button class="btn-primary" style="margin-top:20px;" onclick="document.getElementById('impressum-modal').style.display='none'">Schließen</button>
+    <button class="close" id="closeModal">Schließen</button>
   </div>
 </div>
 
 <script>
-// ============================================
-// Konfiguration
-// ============================================
-const CONFIG = {
-  recipients: [
+(function() {
+  'use strict';
+
+  // ===== STATE =====
+  let markdownText = '';
+  let fileName = '';
+
+  // ===== ELEMENTS =====
+  const dropZone = document.getElementById('dropZone');
+  const dropText = document.getElementById('dropText');
+  const fileInput = document.getElementById('fileInput');
+  const preview = document.getElementById('preview');
+  const previewToggle = document.getElementById('previewToggle');
+  const shareBtn = document.getElementById('shareBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const statusEl = document.getElementById('status');
+  const dateLine = document.getElementById('dateLine');
+  const pdfRender = document.getElementById('pdf-render');
+  const impressumBtn = document.getElementById('impressumBtn');
+  const impressumModal = document.getElementById('impressumModal');
+  const closeModal = document.getElementById('closeModal');
+
+  // ===== DATE =====
+  const MONATE = ['Januar','Februar','März','April','Mai','Juni',
+                  'Juli','August','September','Oktober','November','Dezember'];
+  function formatDateDE(d) {
+    return `${d.getDate()}. ${MONATE[d.getMonth()]} ${d.getFullYear()}`;
+  }
+  function formatDateFile(d) {
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yy = String(d.getFullYear()).slice(-2);
+    return `${dd}${mm}${yy}`;
+  }
+  const today = new Date();
+  const dateDE = formatDateDE(today);
+  const dateFile = formatDateFile(today);
+  dateLine.textContent = `Heute: ${dateDE}`;
+
+  // ===== STATUS HELPER =====
+  function showStatus(msg, type='info') {
+    statusEl.textContent = msg;
+    statusEl.className = `status show ${type}`;
+  }
+  function hideStatus() {
+    statusEl.className = 'status';
+  }
+
+  // ===== FILE HANDLING =====
+  function handleFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      markdownText = e.target.result;
+      fileName = file.name;
+      dropZone.classList.add('has-file');
+      dropText.innerHTML = `<span class="filename">📄 ${file.name}</span>` +
+                           `<span class="filemeta">${(file.size/1024).toFixed(1)} KB · zum Wechseln antippen</span>`;
+      renderPreview();
+      previewToggle.style.display = 'block';
+      shareBtn.disabled = false;
+      downloadBtn.disabled = false;
+      hideStatus();
+    };
+    reader.onerror = () => showStatus('Datei konnte nicht gelesen werden.', 'error');
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+  // Drag & Drop
+  ['dragenter','dragover'].forEach(ev => {
+    dropZone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.add('dragging');
+    });
+  });
+  ['dragleave','drop'].forEach(ev => {
+    dropZone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove('dragging');
+    });
+  });
+  dropZone.addEventListener('drop', (e) => {
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  });
+
+  // ===== MARKDOWN RENDER =====
+  function renderPreview() {
+    const html = marked.parse(markdownText, { breaks: false, gfm: true });
+    preview.innerHTML = html;
+  }
+
+  previewToggle.addEventListener('click', () => {
+    preview.classList.toggle('open');
+    previewToggle.textContent = preview.classList.contains('open')
+      ? 'Vorschau ausblenden ▴'
+      : 'Vorschau einblenden ▾';
+  });
+
+  // ===== PDF GENERATION =====
+  async function buildPdfBlob() {
+    const html = marked.parse(markdownText, { breaks: false, gfm: true });
+    pdfRender.innerHTML = `<div class="pdf-meta">${dateDE}</div>${html}`;
+
+    const opts = {
+      margin: [15, 15, 18, 15], // top, left, bottom, right (mm)
+      filename: `${dateFile}-Pressespiegel.pdf`,
+      image: { type: 'jpeg', quality: 0.95 },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    const blob = await html2pdf().set(opts).from(pdfRender).output('blob');
+    pdfRender.innerHTML = '';
+    return blob;
+  }
+
+  function pdfFilename() {
+    return `${dateFile}-Pressespiegel.pdf`;
+  }
+
+  // ===== EMAIL TEXT =====
+  const RECIPIENTS = [
     'ulrich.thoden@bundestag.de',
     'ulrich.thoden.ma02@bundestag.de',
     'ulrich.thoden.ma03@bundestag.de',
     'ulrich.thoden.ma01@bundestag.de',
     'ulrich.thoden.ma04@bundestag.de',
     'axel.gehring@dielinkebt.de'
-  ],
-  bodyText: `Guten Morgen ihr lieben,
+  ];
+
+  function emailSubject() {
+    return `Pressespiegel ${dateDE}`;
+  }
+  function emailBody() {
+    return `Guten Morgen ihr lieben,
 
 anbei schicke ich euch den heutigen Pressespiegel.
 Ich wünsche euch einen tollen Tag!
 
 Liebe Grüße
-Raphael`
-};
-
-// ============================================
-// Datums-Helpers
-// ============================================
-const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
-
-function formatDateDE(d = new Date()) {
-  return `${d.getDate()}. ${MONTHS_DE[d.getMonth()]} ${d.getFullYear()}`;
-}
-
-function formatDateFile(d = new Date()) {
-  // YYYY-MM-DD für Dateinamen
-  const pad = n => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-}
-
-document.getElementById('today').textContent = formatDateDE();
-
-// ============================================
-// Datei-Auswahl & Drag/Drop
-// ============================================
-let currentMarkdown = null;
-let currentFileName = null;
-
-const fileInput = document.getElementById('file-input');
-const drop = document.getElementById('drop');
-const fileInfo = document.getElementById('file-info');
-const fileNameEl = document.getElementById('file-name');
-const fileSizeEl = document.getElementById('file-size');
-const btnSend = document.getElementById('btn-send');
-const btnPdfOnly = document.getElementById('btn-pdf-only');
-const statusEl = document.getElementById('status');
-const previewToggle = document.getElementById('preview-toggle');
-const previewEl = document.getElementById('preview');
-
-fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
-
-['dragenter', 'dragover'].forEach(ev => {
-  drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('dragover'); });
-});
-['dragleave', 'drop'].forEach(ev => {
-  drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('dragover'); });
-});
-drop.addEventListener('drop', e => {
-  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-});
-
-function handleFile(file) {
-  if (!file) return;
-  const isMarkdown = /\.(md|markdown)$/i.test(file.name) || file.type.includes('markdown') || file.type === 'text/plain';
-  if (!isMarkdown) {
-    showStatus('Bitte eine Markdown-Datei (.md) auswählen.', 'error');
-    return;
+Raphael`;
   }
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    currentMarkdown = e.target.result;
-    currentFileName = file.name.replace(/\.(md|markdown)$/i, '');
-    fileNameEl.textContent = file.name;
-    fileSizeEl.textContent = `${(file.size / 1024).toFixed(1)} KB · ${currentMarkdown.split('\n').length} Zeilen`;
-    fileInfo.classList.add('show');
-    drop.classList.add('has-file');
-    btnSend.disabled = false;
-    btnPdfOnly.disabled = false;
-    previewToggle.style.display = 'block';
-    showStatus('Datei geladen. Bereit zum Versenden.', 'success');
+  // ===== SHARE BUTTON =====
+  shareBtn.addEventListener('click', async () => {
+    if (!markdownText) return;
+    shareBtn.disabled = true;
+    downloadBtn.disabled = true;
+    showStatus('PDF wird erstellt…', 'info');
 
-    // Vorschau aktualisieren
-    previewEl.innerHTML = marked.parse(currentMarkdown);
-  };
-  reader.onerror = () => showStatus('Fehler beim Lesen der Datei.', 'error');
-  reader.readAsText(file, 'UTF-8');
-}
+    try {
+      const blob = await buildPdfBlob();
+      const file = new File([blob], pdfFilename(), { type: 'application/pdf' });
 
-previewToggle.addEventListener('click', () => {
-  const open = previewEl.classList.toggle('show');
-  previewToggle.textContent = open ? 'Vorschau ausblenden' : 'Vorschau anzeigen';
-});
+      // Save a copy to Downloads first (so user has it even if share is canceled)
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = pdfFilename();
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-// ============================================
-// Status-Helper
-// ============================================
-function showStatus(msg, type = 'info') {
-  statusEl.textContent = msg;
-  statusEl.className = `status show ${type}`;
-}
-function clearStatus() {
-  statusEl.classList.remove('show');
-}
+      // Build mail-friendly share text including all metadata
+      const recipientLine = RECIPIENTS.join('; ');
+      const shareText = `An: ${recipientLine}
 
-// ============================================
-// PDF-Generierung (HTML → Canvas → PDF, mehrseitig)
-// ============================================
-async function generatePDF(markdown) {
-  const renderEl = document.getElementById('pdf-render');
+${emailBody()}`;
 
-  // Markdown → HTML
-  marked.setOptions({ breaks: false, gfm: true });
-  const html = marked.parse(markdown);
-  renderEl.innerHTML = html;
+      const shareData = {
+        title: emailSubject(),
+        text: shareText,
+        files: [file]
+      };
 
-  // Externe Links in PDF korrekt darstellen
-  renderEl.querySelectorAll('a').forEach(a => {
-    if (a.href && a.textContent !== a.href) {
-      // Optional: könnte URL inline anhängen, lassen wir aber für sauberen Lesefluss weg
-    }
-  });
-
-  // Warten, dass Schriften/Layout stabil sind
-  await new Promise(r => setTimeout(r, 100));
-
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
-    compress: true
-  });
-
-  const pdfWidth = pdf.internal.pageSize.getWidth();   // 210
-  const pdfHeight = pdf.internal.pageSize.getHeight(); // 297
-
-  // Canvas vom gesamten Render-Element
-  const canvas = await html2canvas(renderEl, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: '#ffffff',
-    windowWidth: renderEl.scrollWidth
-  });
-
-  const imgWidth = pdfWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  // Mehrseitige Aufteilung
-  let heightLeft = imgHeight;
-  let position = 0;
-  const imgData = canvas.toDataURL('image/jpeg', 0.92);
-
-  pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-  heightLeft -= pdfHeight;
-
-  while (heightLeft > 0) {
-    position = heightLeft - imgHeight;
-    pdf.addPage();
-    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, undefined, 'FAST');
-    heightLeft -= pdfHeight;
-  }
-
-  return pdf;
-}
-
-function buildPdfFilename() {
-  return `Pressespiegel_${formatDateFile()}.pdf`;
-}
-
-// ============================================
-// PDF herunterladen
-// ============================================
-btnPdfOnly.addEventListener('click', async () => {
-  if (!currentMarkdown) return;
-  btnPdfOnly.disabled = true;
-  btnSend.disabled = true;
-  showStatus('PDF wird generiert …', 'info');
-  try {
-    const pdf = await generatePDF(currentMarkdown);
-    pdf.save(buildPdfFilename());
-    showStatus('PDF heruntergeladen.', 'success');
-  } catch (err) {
-    console.error(err);
-    showStatus('Fehler bei der PDF-Erstellung: ' + err.message, 'error');
-  } finally {
-    btnPdfOnly.disabled = false;
-    btnSend.disabled = false;
-  }
-});
-
-// ============================================
-// PDF + Mail (Web Share API mit Fallback)
-// ============================================
-btnSend.addEventListener('click', async () => {
-  if (!currentMarkdown) return;
-  btnSend.disabled = true;
-  btnPdfOnly.disabled = true;
-  showStatus('PDF wird generiert …', 'info');
-
-  try {
-    const pdf = await generatePDF(currentMarkdown);
-    const filename = buildPdfFilename();
-    const subject = `Pressespiegel ${formatDateDE()}`;
-    const recipients = CONFIG.recipients.join(',');
-
-    // PDF als Blob/File
-    const pdfBlob = pdf.output('blob');
-    const pdfFile = new File([pdfBlob], filename, { type: 'application/pdf' });
-
-    // Versuch 1: Web Share API mit Datei (Android Chrome)
-    const shareData = {
-      title: subject,
-      text: CONFIG.bodyText,
-      files: [pdfFile]
-    };
-
-    if (navigator.canShare && navigator.canShare(shareData)) {
-      showStatus('Teilen-Menü wird geöffnet … wähle web.de aus.', 'info');
-      try {
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        showStatus('Share-Sheet öffnet sich… web.de auswählen.', 'info');
         await navigator.share(shareData);
-        showStatus('Geteilt. Bitte Empfänger und Betreff in der Mail-App prüfen.', 'success');
-        // Empfänger-Hinweis kopieren als Backup
-        copyRecipientsToClipboard();
-        return;
-      } catch (shareErr) {
-        if (shareErr.name === 'AbortError') {
-          showStatus('Teilen abgebrochen.', 'info');
-          return;
-        }
-        // Fallback unten
-        console.warn('Share fehlgeschlagen, Fallback:', shareErr);
+        showStatus('✓ Geteilt. PDF liegt zusätzlich im Download-Ordner.', 'success');
+      } else {
+        // Fallback: open mailto and let user attach the downloaded PDF
+        const mailto = `mailto:${RECIPIENTS.join(',')}` +
+                       `?subject=${encodeURIComponent(emailSubject())}` +
+                       `&body=${encodeURIComponent(emailBody())}`;
+        window.location.href = mailto;
+        showStatus('Web Share nicht unterstützt — Mail-Entwurf geöffnet. PDF liegt im Download-Ordner und muss manuell angehängt werden.', 'info');
       }
+    } catch (err) {
+      console.error(err);
+      if (err.name === 'AbortError') {
+        showStatus('Teilen abgebrochen. PDF liegt im Download-Ordner.', 'info');
+      } else {
+        showStatus('Fehler: ' + err.message, 'error');
+      }
+    } finally {
+      shareBtn.disabled = false;
+      downloadBtn.disabled = false;
     }
+  });
 
-    // Fallback: PDF herunterladen + mailto öffnen
-    pdf.save(filename);
-    await new Promise(r => setTimeout(r, 500));
+  // ===== DOWNLOAD BUTTON =====
+  downloadBtn.addEventListener('click', async () => {
+    if (!markdownText) return;
+    shareBtn.disabled = true;
+    downloadBtn.disabled = true;
+    showStatus('PDF wird erstellt…', 'info');
 
-    const mailtoUrl = `mailto:${recipients}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(CONFIG.bodyText)}`;
-    window.location.href = mailtoUrl;
-
-    showStatus('PDF heruntergeladen. Mail-Entwurf wurde geöffnet — bitte das PDF aus den Downloads anhängen.', 'success');
-    copyRecipientsToClipboard();
-
-  } catch (err) {
-    console.error(err);
-    showStatus('Fehler: ' + err.message, 'error');
-  } finally {
-    btnSend.disabled = false;
-    btnPdfOnly.disabled = false;
-  }
-});
-
-// Empfänger-Liste in Zwischenablage als Backup (falls mailto nicht alles übernimmt)
-async function copyRecipientsToClipboard() {
-  try {
-    if (navigator.clipboard) {
-      await navigator.clipboard.writeText(CONFIG.recipients.join('; '));
+    try {
+      const blob = await buildPdfBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = pdfFilename();
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showStatus('✓ PDF gespeichert: ' + pdfFilename(), 'success');
+    } catch (err) {
+      console.error(err);
+      showStatus('Fehler: ' + err.message, 'error');
+    } finally {
+      shareBtn.disabled = false;
+      downloadBtn.disabled = false;
     }
-  } catch (e) { /* still ok */ }
-}
+  });
 
-// ============================================
-// Impressum
-// ============================================
-document.getElementById('impressum-link').addEventListener('click', e => {
-  e.preventDefault();
-  const m = document.getElementById('impressum-modal');
-  m.style.display = 'flex';
-});
+  // ===== IMPRESSUM =====
+  impressumBtn.addEventListener('click', () => impressumModal.classList.add('open'));
+  closeModal.addEventListener('click', () => impressumModal.classList.remove('open'));
+  impressumModal.addEventListener('click', (e) => {
+    if (e.target === impressumModal) impressumModal.classList.remove('open');
+  });
+
+})();
 </script>
 
 </body>
